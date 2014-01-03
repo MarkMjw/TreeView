@@ -7,7 +7,7 @@ import android.widget.BaseExpandableListAdapter;
  * The base adapter for TreeView.
  *
  * @author MarkMjw
- * @date 14-1-4
+ * @date 14-01-04
  */
 public abstract class BaseTreeViewAdapter extends BaseExpandableListAdapter implements
         ITreeViewHeaderUpdater {

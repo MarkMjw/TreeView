@@ -24,10 +24,10 @@ public class TreeViewAdapter extends BaseExpandableListAdapter implements ITreeH
     private SparseIntArray mGroupStatusArray;
 
     private String[] mGroups = {
-            "第一组", "第二组", "第三组", "第四组", "第五组",
-            "第六组", "第七组", "第八组", "第九组", "第十组",
-            "第十一组", "第十二组", "第十三组", "第十四组", "第十五组",
-            "第十六组", "第十七组", "第十八组", "第十九组", "第二十组"};
+            "Group 01", "Group 02", "Group 03", "Group 04", "Group 05",
+            "Group 06", "Group 07", "Group 08", "Group 09", "Group 10",
+            "Group 11", "Group 12", "Group 13", "Group 14", "Group 15",
+            "Group 16", "Group 17", "Group 18", "Group 19", "Group 20"};
 
     private String[][] mChildren = {
             {"Way", "Arnold", "Barry", "Chuck", "David", "Afghanistan", "Albania", "Belgium", "Lily", "Jim", "LiMing", "Jodan"},
@@ -100,7 +100,7 @@ public class TreeViewAdapter extends BaseExpandableListAdapter implements ITreeH
         TextView tv = (TextView) convertView.findViewById(R.id.contact_list_item_name);
         tv.setText(getChild(groupPosition, childPosition).toString());
         TextView state = (TextView) convertView.findViewById(R.id.cpntact_list_item_state);
-        state.setText("爱生活...爱Android...");
+        state.setText("Test text...");
         return convertView;
     }
 

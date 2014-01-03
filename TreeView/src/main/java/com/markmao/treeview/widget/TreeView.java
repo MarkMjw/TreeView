@@ -100,12 +100,9 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
     private float mDownX;
     private float mDownY;
 
-    /**
-     * 如果HeaderView是可见的,此函数用于判断是否点击了HeaderView,并对做相应的处理,因为HeaderView
-     * 是画上去的,所以设置事件监听是无效的,只有自行控制.
-     */
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        // 如果HeaderView是可见的,判断是否点击了HeaderView
         if (mHeaderVisible) {
             switch (ev.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -146,23 +143,18 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
         mAdapter = (ITreeHeaderAdapter) adapter;
     }
 
-    /**
-     * 点击了Group触发的事件,要根据根据当前点击Group的状态来
-     */
     @Override
     public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
         int status = mAdapter.getHeaderClickStatus(groupPosition);
 
+        // 点击了Group触发的事件,要根据根据当前点击Group的状态来
         switch (status) {
             case ITreeHeaderAdapter.PINNED_HEADER_GONE:
                 mAdapter.onHeaderClick(groupPosition, ITreeHeaderAdapter.PINNED_HEADER_VISIBLE);
-                parent.expandGroup(groupPosition);
-                parent.setSelectedGroup(groupPosition);
                 break;
 
             case ITreeHeaderAdapter.PINNED_HEADER_VISIBLE:
                 mAdapter.onHeaderClick(groupPosition, ITreeHeaderAdapter.PINNED_HEADER_GONE);
-                parent.collapseGroup(groupPosition);
                 break;
 
             case ITreeHeaderAdapter.PINNED_HEADER_PUSHED_UP:
@@ -173,8 +165,7 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
                 break;
         }
 
-        // 返回true才可以弹回第一行,不知道为什么
-        return true;
+        return false;
     }
 
     @Override
@@ -263,9 +254,6 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
         }
     }
 
-    /**
-     * 列表界面更新时调用该方法(如滚动时)
-     */
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);

@@ -8,20 +8,19 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.markmao.treeview.widget.ITreeHeaderAdapter;
+
+import com.markmao.treeview.widget.BaseTreeViewAdapter;
+import com.markmao.treeview.widget.ITreeViewHeaderUpdater;
 import com.markmao.treeview.widget.TreeView;
 
 /**
- * TreeView adapter
+ * TreeView demo adapter
  *
  * @author MarkMjw
- * @date 13-10-30.
+ * @date 14-01-03.
  */
-public class TreeViewAdapter extends BaseExpandableListAdapter implements ITreeHeaderAdapter {
-    private TreeView mTreeView;
+public class TreeViewAdapter extends BaseTreeViewAdapter {
     private LayoutInflater mInflater;
-
-    private SparseIntArray mGroupStatusArray;
 
     private String[] mGroups = {
             "Group 01", "Group 02", "Group 03", "Group 04", "Group 05",
@@ -52,41 +51,47 @@ public class TreeViewAdapter extends BaseExpandableListAdapter implements ITreeH
             {"Goldy", "Bubbles", "Iceland", "Iran", "Italy", "Jim", "LiMing", "Jodan"}};
 
     public TreeViewAdapter(Context context, TreeView treeView) {
-        mTreeView = treeView;
+        super(treeView);
 
         mInflater = LayoutInflater.from(context);
-
-        mGroupStatusArray = new SparseIntArray();
     }
 
+    @Override
     public Object getChild(int groupPosition, int childPosition) {
         return mChildren[groupPosition][childPosition];
     }
 
+    @Override
     public long getChildId(int groupPosition, int childPosition) {
         return childPosition;
     }
 
+    @Override
     public int getChildrenCount(int groupPosition) {
         return mChildren[groupPosition].length;
     }
 
+    @Override
     public Object getGroup(int groupPosition) {
         return mGroups[groupPosition];
     }
 
+    @Override
     public int getGroupCount() {
         return mGroups.length;
     }
 
+    @Override
     public long getGroupId(int groupPosition) {
         return groupPosition;
     }
 
+    @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
     }
 
+    @Override
     public boolean hasStableIds() {
         return true;
     }
@@ -97,11 +102,30 @@ public class TreeViewAdapter extends BaseExpandableListAdapter implements ITreeH
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.list_item_view, null);
         }
-        TextView tv = (TextView) convertView.findViewById(R.id.contact_list_item_name);
-        tv.setText(getChild(groupPosition, childPosition).toString());
-        TextView state = (TextView) convertView.findViewById(R.id.cpntact_list_item_state);
-        state.setText("Test text...");
+
+        ChildHolder holder = getChildHolder(convertView);
+        holder.name.setText(String.valueOf(getChild(groupPosition, childPosition)));
+        holder.state.setText("Test state...");
         return convertView;
+    }
+
+    private ChildHolder getChildHolder(final View view) {
+        ChildHolder holder = (ChildHolder) view.getTag();
+        if (null == holder) {
+            holder = new ChildHolder(view);
+            view.setTag(holder);
+        }
+        return holder;
+    }
+
+    private class ChildHolder {
+        TextView name;
+        TextView state;
+
+        public ChildHolder(View view) {
+            name = (TextView) view.findViewById(R.id.contact_list_item_name);
+            state = (TextView) view.findViewById(R.id.cpntact_list_item_state);
+        }
     }
 
     @Override
@@ -110,29 +134,38 @@ public class TreeViewAdapter extends BaseExpandableListAdapter implements ITreeH
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.list_group_view, null);
         }
-        TextView groupName = (TextView) convertView.findViewById(R.id.group_name);
-        groupName.setText(mGroups[groupPosition]);
 
-        ImageView indicator = (ImageView) convertView.findViewById(R.id.group_indicator);
-        TextView onlineNum = (TextView) convertView.findViewById(R.id.online_count);
-        onlineNum.setText(getChildrenCount(groupPosition) + "/" + getChildrenCount(groupPosition));
+        GroupHolder holder = getGroupHolder(convertView);
+
+        holder.name.setText(mGroups[groupPosition]);
+        holder.onlineNum.setText(getChildrenCount(groupPosition) + "/" + getChildrenCount(groupPosition));
         if (isExpanded) {
-            indicator.setImageResource(R.drawable.indicator_expanded);
+            holder.indicator.setImageResource(R.drawable.indicator_expanded);
         } else {
-            indicator.setImageResource(R.drawable.indicator_unexpanded);
+            holder.indicator.setImageResource(R.drawable.indicator_unexpanded);
         }
+
         return convertView;
     }
 
-    @Override
-    public int getHeaderState(int groupPosition, int childPosition) {
-        final int childCount = getChildrenCount(groupPosition);
-        if (childPosition == childCount - 1) {
-            return PINNED_HEADER_PUSHED_UP;
-        } else if (childPosition == -1 && !mTreeView.isGroupExpanded(groupPosition)) {
-            return PINNED_HEADER_GONE;
-        } else {
-            return PINNED_HEADER_VISIBLE;
+    private GroupHolder getGroupHolder(final View view) {
+        GroupHolder holder = (GroupHolder) view.getTag();
+        if (null == holder) {
+            holder = new GroupHolder(view);
+            view.setTag(holder);
+        }
+        return holder;
+    }
+
+    private class GroupHolder {
+        TextView name;
+        ImageView indicator;
+        TextView onlineNum;
+
+        public GroupHolder(View view) {
+            name = (TextView) view.findViewById(R.id.group_name);
+            indicator = (ImageView) view.findViewById(R.id.group_indicator);
+            onlineNum = (TextView) view.findViewById(R.id.online_count);
         }
     }
 
@@ -141,15 +174,6 @@ public class TreeViewAdapter extends BaseExpandableListAdapter implements ITreeH
         ((TextView) header.findViewById(R.id.group_name)).setText(mGroups[groupPosition]);
         ((TextView) header.findViewById(R.id.online_count)).setText(getChildrenCount
                 (groupPosition) + "/" + getChildrenCount(groupPosition));
-    }
-
-    @Override
-    public void onHeaderClick(int groupPosition, int status) {
-        mGroupStatusArray.put(groupPosition, status);
-    }
-
-    @Override
-    public int getHeaderClickStatus(int groupPosition) {
-        return mGroupStatusArray.get(groupPosition, 0);
+        header.setAlpha(alpha);
     }
 }

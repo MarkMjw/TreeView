@@ -21,7 +21,7 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 public class TreeView extends ExpandableListView implements OnScrollListener, OnGroupClickListener {
     private static final int MAX_ALPHA = 255;
 
-    private ITreeHeaderAdapter mAdapter;
+    private ITreeViewHeaderUpdater mUpdater;
 
     /**
      * 用于在列表头显示的View,mHeaderVisible为true才可见
@@ -77,38 +77,29 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
         requestLayout();
     }
 
-    /**
-     * 点击HeaderView触发的事件
-     */
-    private void headerViewClick() {
-        long packedPosition = getExpandableListPosition(getFirstVisiblePosition());
+    @Override
+    public void setAdapter(ExpandableListAdapter adapter) {
+        super.setAdapter(adapter);
 
-        int groupPosition = ExpandableListView.getPackedPositionGroup(packedPosition);
-
-        int status = mAdapter.getHeaderClickStatus(groupPosition);
-        if (ITreeHeaderAdapter.PINNED_HEADER_VISIBLE == status) {
-            collapseGroup(groupPosition);
-            mAdapter.onHeaderClick(groupPosition, ITreeHeaderAdapter.PINNED_HEADER_GONE);
+        if(adapter instanceof ITreeViewHeaderUpdater) {
+            mUpdater = (ITreeViewHeaderUpdater) adapter;
         } else {
-            expandGroup(groupPosition);
-            mAdapter.onHeaderClick(groupPosition, ITreeHeaderAdapter.PINNED_HEADER_VISIBLE);
+            throw new IllegalArgumentException("The adapter must instanceof ITreeViewHeaderUpdater.");
         }
-
-        setSelectedGroup(groupPosition);
     }
-
-    private float mDownX;
-    private float mDownY;
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        // 如果HeaderView是可见的,判断是否点击了HeaderView
+        // header view is visible
         if (mHeaderVisible) {
+            float downX = 0;
+            float downY = 0;
+
             switch (ev.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    mDownX = ev.getX();
-                    mDownY = ev.getY();
-                    if (mDownX <= mHeaderWidth && mDownY <= mHeaderHeight) {
+                    downX = ev.getX();
+                    downY = ev.getY();
+                    if (downX <= mHeaderWidth && downY <= mHeaderHeight) {
                         return true;
                     }
                     break;
@@ -116,13 +107,13 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
                 case MotionEvent.ACTION_UP:
                     float x = ev.getX();
                     float y = ev.getY();
-                    float offsetX = Math.abs(x - mDownX);
-                    float offsetY = Math.abs(y - mDownY);
-                    // 如果 HeaderView 是可见的 , 点击在 HeaderView 内 , 那么触发 headerClick()
+                    float offsetX = Math.abs(x - downX);
+                    float offsetY = Math.abs(y - downY);
+                    // the touch event under header view
                     if (x <= mHeaderWidth && y <= mHeaderHeight && offsetX <= mHeaderWidth &&
                             offsetY <= mHeaderHeight) {
                         if (mHeaderView != null) {
-                            headerViewClick();
+                            onHeaderViewClick();
                         }
 
                         return true;
@@ -138,26 +129,19 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
     }
 
     @Override
-    public void setAdapter(ExpandableListAdapter adapter) {
-        super.setAdapter(adapter);
-        mAdapter = (ITreeHeaderAdapter) adapter;
-    }
-
-    @Override
     public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-        int status = mAdapter.getHeaderClickStatus(groupPosition);
+        int status = mUpdater.getHeaderClickStatus(groupPosition);
 
-        // 点击了Group触发的事件,要根据根据当前点击Group的状态来
         switch (status) {
-            case ITreeHeaderAdapter.PINNED_HEADER_GONE:
-                mAdapter.onHeaderClick(groupPosition, ITreeHeaderAdapter.PINNED_HEADER_VISIBLE);
+            case ITreeViewHeaderUpdater.STATE_GONE:
+                mUpdater.onHeaderClick(groupPosition, ITreeViewHeaderUpdater.STATE_VISIBLE_ALL);
                 break;
 
-            case ITreeHeaderAdapter.PINNED_HEADER_VISIBLE:
-                mAdapter.onHeaderClick(groupPosition, ITreeHeaderAdapter.PINNED_HEADER_GONE);
+            case ITreeViewHeaderUpdater.STATE_VISIBLE_ALL:
+                mUpdater.onHeaderClick(groupPosition, ITreeViewHeaderUpdater.STATE_GONE);
                 break;
 
-            case ITreeHeaderAdapter.PINNED_HEADER_PUSHED_UP:
+            case ITreeViewHeaderUpdater.STATE_VISIBLE_PART:
                 // ignore
                 break;
 
@@ -189,8 +173,8 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
         final int groupPos = ExpandableListView.getPackedPositionGroup(listPosition);
         final int childPos = ExpandableListView.getPackedPositionChild(listPosition);
 
-        int state = mAdapter.getHeaderState(groupPos, childPos);
-        if (mHeaderView != null && mAdapter != null && state != mOldState) {
+        int state = mUpdater.getHeaderState(groupPos, childPos);
+        if (mHeaderView != null && mUpdater != null && state != mOldState) {
             mOldState = state;
             mHeaderView.layout(0, 0, mHeaderWidth, mHeaderHeight);
         }
@@ -198,67 +182,11 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
         updateHeaderView(groupPos, childPos);
     }
 
-    public void updateHeaderView(int groupPosition, int childPosition) {
-        if (mHeaderView == null || mAdapter == null || ((ExpandableListAdapter) mAdapter)
-                .getGroupCount() == 0) {
-            return;
-        }
-
-        int state = mAdapter.getHeaderState(groupPosition, childPosition);
-
-        switch (state) {
-            case ITreeHeaderAdapter.PINNED_HEADER_GONE: {
-                mHeaderVisible = false;
-                break;
-            }
-
-            case ITreeHeaderAdapter.PINNED_HEADER_VISIBLE: {
-                mAdapter.updateHeader(mHeaderView, groupPosition, childPosition, MAX_ALPHA);
-
-                if (mHeaderView.getTop() != 0) {
-                    mHeaderView.layout(0, 0, mHeaderWidth, mHeaderHeight);
-                }
-
-                mHeaderVisible = true;
-
-                break;
-            }
-
-            case ITreeHeaderAdapter.PINNED_HEADER_PUSHED_UP: {
-                View firstView = getChildAt(0);
-                int bottom = null != firstView ? firstView.getBottom() : 0;
-
-                int headerHeight = mHeaderView.getHeight();
-
-                int y;
-
-                int alpha;
-
-                if (bottom < headerHeight) {
-                    y = (bottom - headerHeight);
-                    alpha = MAX_ALPHA * (headerHeight + y) / headerHeight;
-                } else {
-                    y = 0;
-                    alpha = MAX_ALPHA;
-                }
-
-                mAdapter.updateHeader(mHeaderView, groupPosition, childPosition, alpha);
-
-                if (mHeaderView.getTop() != y) {
-                    mHeaderView.layout(0, y, mHeaderWidth, mHeaderHeight + y);
-                }
-
-                mHeaderVisible = true;
-                break;
-            }
-        }
-    }
-
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         if (mHeaderVisible) {
-            // 分组栏是直接绘制到界面中，而不是加入到ViewGroup中
+            // draw header view
             drawChild(canvas, mHeaderView, getDrawingTime());
         }
     }
@@ -275,6 +203,77 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
+
     }
 
+    private void updateHeaderView(int groupPosition, int childPosition) {
+        if (mHeaderView == null || mUpdater == null || ((ExpandableListAdapter) mUpdater)
+                .getGroupCount() == 0) {
+            return;
+        }
+
+        int state = mUpdater.getHeaderState(groupPosition, childPosition);
+
+        switch (state) {
+            case ITreeViewHeaderUpdater.STATE_GONE: {
+                mHeaderVisible = false;
+                break;
+            }
+
+            case ITreeViewHeaderUpdater.STATE_VISIBLE_ALL: {
+                mUpdater.updateHeader(mHeaderView, groupPosition, childPosition, MAX_ALPHA);
+
+                if (mHeaderView.getTop() != 0) {
+                    mHeaderView.layout(0, 0, mHeaderWidth, mHeaderHeight);
+                }
+
+                mHeaderVisible = true;
+                break;
+            }
+
+            case ITreeViewHeaderUpdater.STATE_VISIBLE_PART: {
+                // a part of header view visible
+                View firstView = getChildAt(0);
+                int bottom = null != firstView ? firstView.getBottom() : 0;
+
+                int headerHeight = mHeaderView.getHeight();
+                int topY;
+                int alpha;
+
+                if (bottom < headerHeight) {
+                    topY = (bottom - headerHeight);
+                    alpha = MAX_ALPHA * (headerHeight + topY) / headerHeight;
+                } else {
+                    topY = 0;
+                    alpha = MAX_ALPHA;
+                }
+
+                mUpdater.updateHeader(mHeaderView, groupPosition, childPosition, alpha);
+
+                if (mHeaderView.getTop() != topY) {
+                    mHeaderView.layout(0, topY, mHeaderWidth, mHeaderHeight + topY);
+                }
+
+                mHeaderVisible = true;
+                break;
+            }
+        }
+    }
+
+    private void onHeaderViewClick() {
+        long packedPosition = getExpandableListPosition(getFirstVisiblePosition());
+
+        int groupPosition = ExpandableListView.getPackedPositionGroup(packedPosition);
+
+        int status = mUpdater.getHeaderClickStatus(groupPosition);
+        if (ITreeViewHeaderUpdater.STATE_VISIBLE_ALL == status) {
+            collapseGroup(groupPosition);
+            mUpdater.onHeaderClick(groupPosition, ITreeViewHeaderUpdater.STATE_GONE);
+        } else {
+            expandGroup(groupPosition);
+            mUpdater.onHeaderClick(groupPosition, ITreeViewHeaderUpdater.STATE_VISIBLE_ALL);
+        }
+
+        setSelectedGroup(groupPosition);
+    }
 }

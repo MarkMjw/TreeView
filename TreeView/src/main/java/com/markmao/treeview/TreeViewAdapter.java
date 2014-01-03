@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.markmao.treeview.widget.ITreeHeaderAdapter;
+import com.markmao.treeview.widget.TreeView;
 
 /**
  * TreeView adapter
@@ -15,8 +17,7 @@ import android.widget.TextView;
  * @author MarkMjw
  * @date 13-10-30.
  */
-public class TreeViewAdapter extends BaseExpandableListAdapter implements TreeView
-        .ITreeHeaderAdapter {
+public class TreeViewAdapter extends BaseExpandableListAdapter implements ITreeHeaderAdapter {
     private TreeView mTreeView;
     private LayoutInflater mInflater;
 

@@ -1,4 +1,4 @@
-package com.markmao.treeview;
+package com.markmao.treeview.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -24,7 +24,7 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
     private ITreeHeaderAdapter mAdapter;
 
     /**
-     * 用于在列表头显示的 View, mHeaderVisible 为 true 才可见
+     * 用于在列表头显示的View,mHeaderVisible为true才可见
      */
     private View mHeaderView;
 
@@ -78,7 +78,7 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
     }
 
     /**
-     * 点击 HeaderView 触发的事件
+     * 点击HeaderView触发的事件
      */
     private void headerViewClick() {
         long packedPosition = getExpandableListPosition(getFirstVisiblePosition());
@@ -101,8 +101,8 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
     private float mDownY;
 
     /**
-     * 如果 HeaderView 是可见的 , 此函数用于判断是否点击了 HeaderView, 并对做相应的处理 , 因为 HeaderView
-     * 是画上去的 , 所以设置事件监听是无效的 , 只有自行控制 .
+     * 如果HeaderView是可见的,此函数用于判断是否点击了HeaderView,并对做相应的处理,因为HeaderView
+     * 是画上去的,所以设置事件监听是无效的,只有自行控制.
      */
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
@@ -147,7 +147,7 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
     }
 
     /**
-     * 点击了 Group 触发的事件 , 要根据根据当前点击 Group 的状态来
+     * 点击了Group触发的事件,要根据根据当前点击Group的状态来
      */
     @Override
     public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
@@ -173,7 +173,7 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
                 break;
         }
 
-        // 返回 true 才可以弹回第一行 , 不知道为什么
+        // 返回true才可以弹回第一行,不知道为什么
         return true;
     }
 
@@ -289,61 +289,4 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
     public void onScrollStateChanged(AbsListView view, int scrollState) {
     }
 
-    /**
-     * Adapter 接口 . 列表必须实现此接口 .
-     *
-     * @author MarkMjw
-     */
-    public interface ITreeHeaderAdapter {
-        /**
-         * Gone.
-         */
-        public static final int PINNED_HEADER_GONE = 0;
-        /**
-         * Visible.
-         */
-        public static final int PINNED_HEADER_VISIBLE = 1;
-        /**
-         * Push up.
-         */
-        public static final int PINNED_HEADER_PUSHED_UP = 2;
-
-        /**
-         * 获取 Header 的状态
-         *
-         * @param groupPosition
-         * @param childPosition
-         * @return {@link #PINNED_HEADER_GONE}, {@link #PINNED_HEADER_VISIBLE},
-         * {@link #PINNED_HEADER_PUSHED_UP}
-         * 其中之一
-         */
-        int getHeaderState(int groupPosition, int childPosition);
-
-        /**
-         * 配置 Header, 让 Header 知道显示的内容
-         *
-         * @param header
-         * @param groupPosition
-         * @param childPosition
-         * @param alpha
-         */
-        void updateHeader(View header, int groupPosition, int childPosition, int alpha);
-
-        /**
-         * 设置组按下的状态
-         *
-         * @param groupPosition
-         * @param status        {@link #PINNED_HEADER_GONE}, {@link #PINNED_HEADER_VISIBLE},
-         * {@link #PINNED_HEADER_PUSHED_UP}
-         */
-        void onHeaderClick(int groupPosition, int status);
-
-        /**
-         * 获取组按下的状态
-         *
-         * @param groupPosition
-         * @return
-         */
-        int getHeaderClickStatus(int groupPosition);
-    }
 }

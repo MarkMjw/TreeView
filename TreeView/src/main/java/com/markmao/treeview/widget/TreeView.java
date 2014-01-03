@@ -17,6 +17,7 @@ import android.widget.ExpandableListView.OnGroupClickListener;
  *
  * @see android.widget.ExpandableListView
  * @author MarkMjw
+ * @date 14-01-03.
  */
 public class TreeView extends ExpandableListView implements OnScrollListener, OnGroupClickListener {
     private static final int MAX_ALPHA = 255;

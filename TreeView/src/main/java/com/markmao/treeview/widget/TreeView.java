@@ -23,14 +23,8 @@ public class TreeView extends ExpandableListView implements OnScrollListener, On
 
     private ITreeViewHeaderUpdater mUpdater;
 
-    /**
-     * 用于在列表头显示的View,mHeaderVisible为true才可见
-     */
     private View mHeaderView;
 
-    /**
-     * 列表头是否可见
-     */
     private boolean mHeaderVisible;
 
     private int mHeaderWidth;

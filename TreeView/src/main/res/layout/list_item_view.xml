@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/contact_list_item_bg_selector"
+    android:paddingBottom="6.0dip"
+    android:paddingTop="6.0dip">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="50.0dip"
+        android:layout_height="50.0dip"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10.0dip"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_launcher" />
+
+    <ImageView
+        android:id="@+id/stateicon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/icon"
+        android:layout_alignRight="@id/icon"
+        android:contentDescription="@null"
+        android:src="@drawable/status_online" />
+
+    <TextView
+        android:id="@+id/contact_list_item_name"
+        android:layout_width="fill_parent"
+        android:layout_height="25.0dip"
+        android:layout_marginLeft="10.0dip"
+        android:layout_marginRight="18.0dip"
+        android:layout_toRightOf="@id/icon"
+        android:drawableRight="@drawable/iphone_online"
+        android:ellipsize="end"
+        android:gravity="left|center"
+        android:includeFontPadding="false"
+        android:padding="0.0dip"
+        android:singleLine="true"
+        android:textColor="@drawable/contact_list_item_buddy_name_text_color"
+        android:textSize="16.0sp" />
+
+    <TextView
+        android:id="@+id/cpntact_list_item_state"
+        android:layout_width="fill_parent"
+        android:layout_height="25.0dip"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/contact_list_item_name"
+        android:layout_marginLeft="10.0dip"
+        android:layout_marginRight="18.0dip"
+        android:layout_toRightOf="@id/icon"
+        android:ellipsize="end"
+        android:gravity="left|center"
+        android:includeFontPadding="false"
+        android:padding="0.0dip"
+        android:singleLine="true"
+        android:textColor="@drawable/contact_list_item_buddy_signature_text_color2"
+        android:textSize="12.0sp" />
+
+</RelativeLayout>

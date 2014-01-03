@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/group_item_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="50.0dip"
+    android:background="@drawable/list_group_item_background" >
+
+    <ImageView
+        android:id="@+id/group_indicator"
+        android:layout_width="12.0dip"
+        android:layout_height="50.0dip"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="14.0dip"
+        android:scaleType="center"
+        android:contentDescription="@null"
+        android:src="@drawable/indicator_expanded" />
+
+    <TextView
+        android:id="@+id/group_name"
+        android:layout_width="wrap_content"
+        android:layout_height="50.0dip"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="44.0dip"
+        android:layout_marginRight="10.0dip"
+        android:layout_toLeftOf="@+id/online_count"
+        android:ellipsize="end"
+        android:gravity="left|center"
+        android:includeFontPadding="false"
+        android:maxEms="11"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textColor="#ff333333"
+        android:textSize="15.0sp" />
+
+    <TextView
+        android:id="@+id/online_count"
+        android:layout_width="50dip"
+        android:layout_height="50.0dip"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10.0dip"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="#ff929292"
+        android:textSize="12.0sp" />
+
+</RelativeLayout>

@@ -13,11 +13,11 @@ import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
 /**
- * 仿IOS TreeView，继承ExpandableListView实现
+ * This widget extends {@link android.widget.ExpandableListView}, just like TreeView(IOS).
  *
  * @see android.widget.ExpandableListView
- * @author MarkMjw
- * @date 14-01-03.
+ * @author markmjw
+ * @date 2014-01-03
  */
 public class TreeView extends ExpandableListView implements OnScrollListener, OnGroupClickListener {
     private static final int MAX_ALPHA = 255;

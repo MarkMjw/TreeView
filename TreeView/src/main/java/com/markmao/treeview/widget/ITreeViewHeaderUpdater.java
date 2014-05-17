@@ -5,8 +5,8 @@ import android.view.View;
 /**
  * Update interface TreeView's header .
  *
- * @author MarkMjw
- * @date 14-01-04.
+ * @author markmjw
+ * @date 2014-01-04
  */
 public interface ITreeViewHeaderUpdater {
     /** Header Gone. */

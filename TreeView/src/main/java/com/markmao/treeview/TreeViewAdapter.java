@@ -1,23 +1,20 @@
 package com.markmao.treeview;
 
 import android.content.Context;
-import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.markmao.treeview.widget.BaseTreeViewAdapter;
-import com.markmao.treeview.widget.ITreeViewHeaderUpdater;
 import com.markmao.treeview.widget.TreeView;
 
 /**
  * TreeView demo adapter
  *
- * @author MarkMjw
- * @date 14-01-03.
+ * @author markmjw
+ * @date 2014-01-04
  */
 public class TreeViewAdapter extends BaseTreeViewAdapter {
     private LayoutInflater mInflater;
